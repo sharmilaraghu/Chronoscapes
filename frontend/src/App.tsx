@@ -41,6 +41,8 @@ export default function App() {
     sfxUrl,
     hasSearched,
     error,
+    musicDuration,
+    setMusicDuration,
     search,
     selectChunk,
     deselectChunk,
@@ -168,13 +170,15 @@ export default function App() {
               onConfirmSelection={confirmSelection}
               appState={appState}
               hasSearched={hasSearched}
+              musicDuration={musicDuration}
+              onMusicDurationChange={setMusicDuration}
             />
           }
         />
       </div>
 
       <footer className="app-footer">
-        Chronoscape · Acoustic Time Travel · Est. 2026 · All sounds synthesised — no recordings used
+        Chronoscapes · Acoustic Time Travel · Est. 2026 · All sounds synthesised — no recordings used
       </footer>
     </div>
   );

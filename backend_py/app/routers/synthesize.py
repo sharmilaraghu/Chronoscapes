@@ -42,6 +42,7 @@ async def synthesize(request: SynthesizeRequest, http_request: Request):
             city=request.city,
             era=request.era,
             correlation_id=correlation_id,
+            music_duration_seconds=request.musicDurationSeconds,
         )
         return {
             "success": True,

@@ -81,7 +81,7 @@ export default function ReconstructedScene({ scene }: ReconstructedSceneProps) {
       )}
 
       <div className="chronoscape-radio">
-        <span className="chronoscape-radio-label">✦ Chronoscape Radio</span>
+        <span className="chronoscape-radio-label">✦ Chronoscapes Radio</span>
       </div>
     </div>
   );

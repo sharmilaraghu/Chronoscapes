@@ -1362,6 +1362,55 @@
     transform: translateY(1px);
   }
 
+  /* ── Duration picker ── */
+  .dispatch-compose-controls {
+    margin-top: 0.75rem;
+  }
+
+  .dispatch-duration-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .dispatch-duration-label {
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-faded);
+    white-space: nowrap;
+  }
+
+  .dispatch-duration-options {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .dispatch-duration-btn {
+    font-family: var(--font-caption);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    color: var(--color-ink-faded);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    letter-spacing: 0.05em;
+  }
+
+  .dispatch-duration-btn:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .dispatch-duration-btn--active {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+  }
+
   /* ── Loading skeleton ── */
   .dispatch-loading-skeleton {
     display: flex;

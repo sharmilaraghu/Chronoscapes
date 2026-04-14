@@ -22,6 +22,7 @@ async def synthesize_scene(
     city: str,
     era: str,
     correlation_id: Optional[str] = None,
+    music_duration_seconds: int = 30,
 ) -> tuple[SynthesizedScene, str, str]:
     """
     Phase 4: Merge selected chunks into a coherent soundscape + audio.
@@ -50,11 +51,13 @@ async def synthesize_scene(
         for a in analyses
     )
 
-    prompt = f"""You are reconstructing a historical soundscape from structured evidence.
+    prompt = f"""You are reconstructing lost historical music and soundscapes from newspaper evidence.
 
-Combine the input analyses into a single coherent soundscape for audio generation.
+Your primary mission is to recreate the MUSIC of this era — the songs people actually sang, \
+the melodies that filled these spaces. This is not background ambience; it is lost music being \
+brought back to life.
 
-Return a valid JSON object:
+Combine the input analyses into a single coherent scene and return a valid JSON object:
 {{
   "sceneSummary": "<2-3 sentence description of the scene>",
   "dominantSounds": ["<sound that defines the scene>", ...],
@@ -65,19 +68,38 @@ Return a valid JSON object:
   "acousticProfile": "<e.g. echoic urban canyon, open rural, enclosed parlor>",
   "intensity": "<quiet|moderate|loud|bustling>",
   "musicPrompt": "<30-second era-accurate music description for ElevenLabs Music API — include tempo (BPM), key instruments, emotional tone, historical period style>",
-  "sfxPrompt": "<15-second ambient sound effects description for ElevenLabs SFX API — specific sounds described in the analyses (e.g. horse-drawn carriages, jazz band, rain on windows)>"
+  "sfxPrompt": "<15-second ambient sound effects description for ElevenLabs SFX API — specific sounds described in the analyses>",
+  "isVocal": true,
+  "lyrics": "<4-6 line verse in the vernacular of the era, drawn from language and imagery in the passages>"
 }}
 
-Rules:
+VOCAL MUSIC RULES (isVocal):
+- Default is true — historical music almost always had words. Parlor songs, work songs, \
+marching anthems, jazz standards, big band ballads — these were vocal forms.
+- Set isVocal to false ONLY when the scene is clearly non-musical: factory floors, weather \
+disasters, crime blotters, outdoor chaos with zero social/gathering/performance signal.
+- Any mention of singing, dancing, a performer, saloon, ballroom, church, parade, or crowd \
+gathered socially → isVocal must be true.
+
+LYRICS RULES (only when isVocal is true):
+- Write exactly 4–6 lines — one verse, no chorus, no repetition markers.
+- Draw language and imagery DIRECTLY from the passage texts. Use their actual words and \
+phrases where possible; do not invent unrelated content.
+- Write in the vernacular and emotional register of the era:
+  - Gilded_Age → parlor song or folk ballad cadence, formal but tender
+  - WWI → marching song or music hall anthem, stirring and direct
+  - Jazz_Age → blues or Tin Pan Alley cadence, syncopated, wry or longing
+  - WWII → big band ballad, sentimental, plain-spoken yearning
+- No modern phrasing, no anachronisms.
+- If isVocal is false, set lyrics to null.
+
+GENERAL RULES:
 - Prioritize sounds that appear across multiple inputs
 - Do NOT introduce sounds not present in any input
-- dominantSounds: what you hear first and most prominently (3-5 sounds)
-- secondarySounds: supporting ambient sounds (2-4 sounds)
-- backgroundSounds: distant/ambient layer (2-3 sounds)
+- dominantSounds: 3-5 most prominent; secondarySounds: 2-4; backgroundSounds: 2-3
 - musicPrompt and sfxPrompt: grounded in the actual inputs, no generic vintage clichés
-- musicPrompt: mention BPM, specific instruments, emotional quality, historical style
-- sfxPrompt: list exact sounds from the analyses
-- Keep prompts under 500 characters each
+- musicPrompt: BPM, specific instruments, emotional quality, historical style (under 500 chars)
+- sfxPrompt: exact sounds from the analyses (under 500 chars)
 - era context: {era}, location: {city}
 
 INPUT:
@@ -114,6 +136,8 @@ INPUT:
         dominant_sounds=len(scene.dominantSounds),
         secondary_sounds=len(scene.secondarySounds),
         background_sounds=len(scene.backgroundSounds),
+        is_vocal=scene.isVocal,
+        has_lyrics=scene.lyrics is not None,
         duration_ms=phase4_ms,
     )
 
@@ -124,7 +148,13 @@ INPUT:
         music_prompt_len=len(scene.musicPrompt),
         sfx_prompt_len=len(scene.sfxPrompt),
     )
-    music_url, sfx_url = await generate_audio(scene.musicPrompt, scene.sfxPrompt)
+    music_url, sfx_url = await generate_audio(
+        scene.musicPrompt,
+        scene.sfxPrompt,
+        lyrics=scene.lyrics if scene.isVocal else None,
+        instrumental=not scene.isVocal,
+        duration_ms=music_duration_seconds * 1000,
+    )
     logger.info(
         "ElevenLabs: generation complete",
         correlation_id=correlation_id,

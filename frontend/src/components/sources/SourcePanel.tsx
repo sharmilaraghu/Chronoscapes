@@ -1,5 +1,11 @@
-import type { ChunkAnalysis } from '../../lib/types';
+import type { ChunkAnalysis, MusicDuration } from '../../lib/types';
 import DispatchCard from './DispatchCard';
+
+const DURATION_OPTIONS: { value: MusicDuration; label: string }[] = [
+  { value: 30, label: '30s' },
+  { value: 60, label: '60s' },
+  { value: 90, label: '90s' },
+];
 
 interface SourcePanelProps {
   analyzedChunks: ChunkAnalysis[];
@@ -9,6 +15,8 @@ interface SourcePanelProps {
   onConfirmSelection: () => void;
   appState: string;
   hasSearched: boolean;
+  musicDuration: MusicDuration;
+  onMusicDurationChange: (d: MusicDuration) => void;
 }
 
 export default function SourcePanel({
@@ -19,6 +27,8 @@ export default function SourcePanel({
   onConfirmSelection,
   appState,
   hasSearched,
+  musicDuration,
+  onMusicDurationChange,
 }: SourcePanelProps) {
   const isLoading = appState === 'analyzing';
   const isSynthesizing = appState === 'synthesizing';
@@ -110,15 +120,32 @@ export default function SourcePanel({
             ))}
           </div>
 
-          {/* Confirm button — only when in selected state */}
+          {/* Duration picker + confirm button — only when in selected state */}
           {appState === 'selected' && selectedChunkIds.length > 0 && (
-            <button
-              className="dispatch-confirm-button"
-              onClick={onConfirmSelection}
-              type="button"
-            >
-              ✦ Compose Soundscape ({selectedChunkIds.length} dispatch{selectedChunkIds.length !== 1 ? 's' : ''})
-            </button>
+            <div className="dispatch-compose-controls">
+              <div className="dispatch-duration-picker">
+                <span className="dispatch-duration-label">Broadcast length</span>
+                <div className="dispatch-duration-options">
+                  {DURATION_OPTIONS.map(({ value, label }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`dispatch-duration-btn${musicDuration === value ? ' dispatch-duration-btn--active' : ''}`}
+                      onClick={() => onMusicDurationChange(value)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button
+                className="dispatch-confirm-button"
+                onClick={onConfirmSelection}
+                type="button"
+              >
+                ✦ Compose Soundscape ({selectedChunkIds.length} dispatch{selectedChunkIds.length !== 1 ? 's' : ''})
+              </button>
+            </div>
           )}
         </>
       )}

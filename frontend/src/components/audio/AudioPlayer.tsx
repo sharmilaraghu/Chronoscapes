@@ -42,7 +42,7 @@ export default function AudioPlayer({
 
   return (
     <div className="radio-chassis">
-      <p className="radio-brand">✦ Chronoscape Radio ✦</p>
+      <p className="radio-brand">✦ Chronoscapes Radio ✦</p>
 
       <div className="radio-dial">
         <p className="radio-dial-label">Now Broadcasting</p>

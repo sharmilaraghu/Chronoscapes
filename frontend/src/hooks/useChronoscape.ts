@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { searchPassages, analyzePassages, synthesizeScene } from '../lib/api';
-import type { AppState, Era, Passage, ChunkAnalysis, SynthesizedScene } from '../lib/types';
+import type { AppState, Era, MusicDuration, Passage, ChunkAnalysis, SynthesizedScene } from '../lib/types';
 
 interface ChronoscapeResult {
   appState: AppState;
@@ -14,6 +14,8 @@ interface ChronoscapeResult {
   hasSearched: boolean;
   error: string | null;
   correlationId: string | null;
+  musicDuration: MusicDuration;
+  setMusicDuration: (d: MusicDuration) => void;
   search: (query: string, era: Era | undefined) => Promise<void>;
   selectChunk: (id: string) => void;
   deselectChunk: (id: string) => void;
@@ -33,6 +35,7 @@ export function useChronoscape(): ChronoscapeResult {
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [correlationId, setCorrelationId] = useState<string | null>(null);
+  const [musicDuration, setMusicDuration] = useState<MusicDuration>(30);
 
   const reset = useCallback(() => {
     setAppState('idle');
@@ -141,6 +144,7 @@ export function useChronoscape(): ChronoscapeResult {
         analyses: selectedAnalyses,
         city,
         era,
+        musicDurationSeconds: musicDuration,
       });
 
       if (!res.success) {
@@ -159,7 +163,7 @@ export function useChronoscape(): ChronoscapeResult {
       setError(err instanceof Error ? err.message : 'Synthesis failed');
       setAppState('error');
     }
-  }, [selectedChunkIds, analyzedChunks, passages]);
+  }, [selectedChunkIds, analyzedChunks, passages, musicDuration]);
 
   return {
     appState,
@@ -173,6 +177,8 @@ export function useChronoscape(): ChronoscapeResult {
     hasSearched,
     error,
     correlationId,
+    musicDuration,
+    setMusicDuration,
     search,
     selectChunk,
     deselectChunk,

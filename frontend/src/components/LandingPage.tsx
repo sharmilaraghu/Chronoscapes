@@ -53,7 +53,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         </button>
 
         <p className="landing-credit">
-          Chronoscape · Powered by Gemini · ElevenLabs · turbopuffer · All sources public domain
+          Chronoscapes · Powered by Gemini · ElevenLabs · turbopuffer · All sources public domain
         </p>
       </main>
     </div>

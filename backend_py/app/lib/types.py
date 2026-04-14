@@ -36,6 +36,8 @@ class SynthesizedScene(BaseModel):
     intensity: str = ""
     musicPrompt: str = ""
     sfxPrompt: str = ""
+    isVocal: bool = True
+    lyrics: Optional[str] = None
 
 
 class AnalyzeResult(BaseModel):
@@ -82,3 +84,4 @@ class SynthesizeRequest(BaseModel):
     analyses: list[ChunkAnalysis] = Field(..., min_length=1, max_length=3)
     city: str = Field(..., min_length=1, max_length=100)
     era: Literal["Gilded_Age", "WWI", "Jazz_Age", "WWII"]
+    musicDurationSeconds: Literal[30, 60, 90] = 30

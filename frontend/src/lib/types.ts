@@ -115,10 +115,13 @@ export interface AnalyzeResponse {
   metadata?: Record<string, unknown>;
 }
 
+export type MusicDuration = 30 | 60 | 90;
+
 export interface SynthesizeRequest {
   analyses: ChunkAnalysis[];
   city: string;
   era: Era;
+  musicDurationSeconds: MusicDuration;
 }
 
 export interface SynthesizeResponse {

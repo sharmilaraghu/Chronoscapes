@@ -9,3 +9,4 @@ google-genai>=0.3.0
 elevenlabs>=1.0.0
 structlog>=24.0.0
 slowapi>=0.1.9
+turbopuffer>=0.1.0
