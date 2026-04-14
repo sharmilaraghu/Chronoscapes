@@ -26,23 +26,72 @@
 
 @layer base {
   body {
-    background-color: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-body);
     font-size: 1rem;
     line-height: 1.6;
+
+    /* Aged newsprint — warmer/darker than clean paper */
+    background-color: #e8d9b0;
+
+    /* Layered aged-paper atmosphere — fixed so it never scrolls:
+       fold creases · corner foxing · edge yellowing · warm centre · vignette */
+    background-image:
+      /* Diagonal fold crease */
+      linear-gradient(
+        -11deg,
+        transparent 46.8%,
+        rgba(26, 18, 8, 0.038) 47.3%,
+        rgba(26, 18, 8, 0.062) 47.7%,
+        rgba(26, 18, 8, 0.038) 48.1%,
+        transparent 48.7%
+      ),
+      /* Shallow horizontal crease, upper third */
+      linear-gradient(
+        174deg,
+        transparent 28.5%,
+        rgba(26, 18, 8, 0.022) 29.1%,
+        rgba(26, 18, 8, 0.038) 29.5%,
+        rgba(26, 18, 8, 0.018) 30%,
+        transparent 30.8%
+      ),
+      /* Top-left corner foxing */
+      radial-gradient(ellipse 62% 46% at 4% 7%,  rgba(128, 88, 18, 0.26) 0%, rgba(128, 88, 18, 0.10) 42%, transparent 68%),
+      /* Bottom-right corner stain */
+      radial-gradient(ellipse 58% 44% at 97% 95%, rgba(108, 72, 16, 0.23) 0%, rgba(108, 72, 16, 0.09) 44%, transparent 66%),
+      /* Top-right age mark */
+      radial-gradient(ellipse 34% 24% at 94% 4%,  rgba(138, 98, 28, 0.19) 0%, transparent 56%),
+      /* Bottom-left edge stain */
+      radial-gradient(ellipse 42% 30% at 3% 93%,  rgba(98, 65, 14, 0.20) 0%, transparent 58%),
+      /* Right-edge yellowing */
+      radial-gradient(ellipse 26% 58% at 100% 42%, rgba(148, 108, 32, 0.16) 0%, transparent 60%),
+      /* Small foxing spot — mid-right */
+      radial-gradient(ellipse 11% 9% at 80% 61%,  rgba(118, 78, 20, 0.16) 0%, transparent 52%),
+      /* Small foxing spot — upper centre-left */
+      radial-gradient(ellipse 8% 7% at 22% 34%,   rgba(110, 72, 18, 0.13) 0%, transparent 50%),
+      /* Centre warm brightening */
+      radial-gradient(ellipse 68% 58% at 48% 46%, rgba(255, 245, 195, 0.16) 0%, transparent 65%),
+      /* Vignette — edges always darken on old stock */
+      radial-gradient(ellipse 87% 80% at 50% 50%, transparent 48%, rgba(26, 18, 8, 0.30) 100%);
+
+    background-attachment: fixed;
+    background-size: cover;
   }
 
-  /* Paper grain texture */
+  /* Two-layer noise overlay — sits above everything, fixed to screen:
+     layer 1: low-freq turbulence → surface wrinkles / undulation
+     layer 2: high-freq fractalNoise → paper fibre grain */
   body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 9999;
-    opacity: 1;
+    mix-blend-mode: multiply;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.018 0.011' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23w)' opacity='0.26'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+    background-size: 100% 100%, 260px 260px;
   }
 
   h1, h2, h3, h4 {
@@ -593,7 +642,7 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
-    background: var(--color-paper);
+    background: transparent;
   }
 
   .search-bar-strip {
@@ -959,19 +1008,17 @@
   .landing-root {
     height: 100vh;
     height: 100dvh;
-    background: var(--color-paper);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    background: transparent;
   }
 
+  /* body::after handles the global noise — nothing extra needed here */
   .landing-noise {
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-    pointer-events: none;
+    display: none;
   }
 
   .landing-center {
