@@ -1,5 +1,7 @@
 # Chronoscapes — Music from the Lost Ages
 
+![License: MIT](https://img.shields.io/badge/License-MIT-c8a84b.svg)
+
 > What did a Harlem jazz club sound like in 1925? What songs filled a London street during the Blitz?
 > Chronoscapes brings that music back.
 
