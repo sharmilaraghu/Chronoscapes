@@ -3,6 +3,8 @@ CLAUDE.md
 CONTEXT.md
 todo.md
 docs/
+tasks/
+.backup/
 
 # Secrets
 backend/.env

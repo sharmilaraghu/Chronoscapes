@@ -98,6 +98,23 @@ export default function AudioPlayer({
             <span className="radio-btn-icon" style={{ marginLeft: '3px' }}>▶</span>
           )}
         </button>
+        {hasAudio && musicUrl && (
+          <button
+            className="radio-play-btn"
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = musicUrl;
+              a.download = 'chronoscape-music.mp3';
+              a.click();
+            }}
+            aria-label="Save music"
+            type="button"
+            title="Save music"
+            style={{ marginLeft: '0.5rem', fontSize: '0.7rem' }}
+          >
+            <span className="radio-btn-icon">↓ Save</span>
+          </button>
+        )}
       </div>
 
       {synthesizedPrompt && (

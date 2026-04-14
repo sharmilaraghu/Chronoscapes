@@ -716,6 +716,41 @@
     padding: 0.5rem;
   }
 
+  /* Map panel */
+  .map-panel {
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .map-panel--compact {
+    max-height: 200px;
+    overflow: hidden;
+  }
+
+  .map-panel--compact .map-frame {
+    height: 180px !important;
+    min-height: 0 !important;
+  }
+
+  /* Layout body — when audio is ready, center stage */
+  .layout-body--ready .newspaper-col--left {
+    display: none;
+  }
+
+  .layout-body--ready .newspaper-col--right {
+    flex: 1;
+  }
+
+  .layout-body--ready .newspaper-col-center-wrapper--visible {
+    flex: 1;
+    max-width: none;
+  }
+
+  .layout-body--ready .newspaper-col--center {
+    flex: 1;
+    width: auto;
+  }
+
   /* Center column wrapper — collapses/expands */
   .newspaper-col-center-wrapper {
     display: flex;

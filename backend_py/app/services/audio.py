@@ -13,8 +13,8 @@ from app.lib.logger import get_logger
 logger = get_logger("audio")
 
 
-async def _elevenlabs_audio(endpoint: str, body: dict) -> str:
-    """POST to ElevenLabs, return base64 data: URL."""
+async def _elevenlabs_audio(endpoint: str, body: dict, *, retries: int = 1) -> str:
+    """POST to ElevenLabs, return base64 data: URL. Retries with sanitized prompt on rejection."""
     async with httpx.AsyncClient(timeout=60.0) as client:
         resp = await client.post(
             f"https://api.elevenlabs.io{endpoint}",
@@ -25,6 +25,27 @@ async def _elevenlabs_audio(endpoint: str, body: dict) -> str:
             },
         )
     if not resp.is_success:
+        try:
+            err_body = resp.json()
+            # ElevenLabs may return a safe prompt suggestion on bad_prompt errors
+            if (
+                err_body.get("status") == "bad_prompt"
+                and err_body.get("data", {}).get("prompt_suggestion")
+                and retries > 0
+            ):
+                safe_prompt = err_body["data"]["prompt_suggestion"]
+                logger.warning(
+                    "ElevenLabs rejected original prompt, retrying with sanitized version",
+                    original_prompt_len=len(body.get("prompt", body.get("text", ""))),
+                    safe_prompt_len=len(safe_prompt),
+                )
+                return await _elevenlabs_audio(
+                    endpoint,
+                    {**body, "prompt" if endpoint == "/v1/music/generate" else "text": safe_prompt},
+                    retries=0,
+                )
+        except Exception:
+            pass
         logger.error("ElevenLabs API error", endpoint=endpoint, status=resp.status_code, body=resp.text)
         raise RuntimeError(f"ElevenLabs API error {resp.status_code}: {resp.text}")
 

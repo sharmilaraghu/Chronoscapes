@@ -53,13 +53,26 @@ export function useAudio(): UseAudioReturn {
     audio.onended = () => setState((prev) => ({ ...prev, isPlaying: false }));
   }, []);
 
-  const play = useCallback(() => {
+  const play = useCallback(async () => {
     if (!audioRef.current) return;
-    initAudioContext(audioRef.current);
-    if (audioCtxRef.current?.state === 'suspended') {
-      audioCtxRef.current.resume();
+    const audio = audioRef.current;
+
+    // Wait for audio to be ready before attempting to play
+    if (audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      await new Promise<void>((resolve) => {
+        const onCanPlay = () => {
+          audio.removeEventListener('canplay', onCanPlay);
+          resolve();
+        };
+        audio.addEventListener('canplay', onCanPlay);
+      });
     }
-    const promise = audioRef.current.play();
+
+    initAudioContext(audio);
+    if (audioCtxRef.current?.state === 'suspended') {
+      await audioCtxRef.current.resume();
+    }
+    const promise = audio.play();
     playPromiseRef.current = promise;
     promise?.then(() => {
       setState((prev) => ({ ...prev, isPlaying: true }));

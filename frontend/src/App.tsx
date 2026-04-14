@@ -122,15 +122,17 @@ export default function App() {
       )}
 
       {/* Three-column layout */}
-      <div className="layout-body">
+      <div className={`layout-body${appState === 'ready' ? ' layout-body--ready' : ''}`}>
         <NewspaperLayout
           showCenter={appState === 'ready' && (!!musicUrl || !!sfxUrl)}
           left={
-            <ChronoscopeMap
-              center={mapCenter}
-              locationLabel={currentPlace}
-              onLocationSelect={handleLocationSelect}
-            />
+            <div className={appState === 'ready' ? 'map-panel map-panel--compact' : 'map-panel'}>
+              <ChronoscopeMap
+                center={mapCenter}
+                locationLabel={currentPlace}
+                onLocationSelect={handleLocationSelect}
+              />
+            </div>
           }
           center={
             <>
