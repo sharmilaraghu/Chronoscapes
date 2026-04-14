@@ -94,7 +94,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Masthead edition={edition} compact />
+      <Masthead edition={edition} compact onTitleClick={() => setHasEntered(false)} />
 
       {/* Search bar */}
       <div className="search-bar-strip">

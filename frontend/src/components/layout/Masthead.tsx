@@ -1,13 +1,18 @@
 interface MastheadProps {
   edition?: string;
   compact?: boolean;
+  onTitleClick?: () => void;
 }
 
-export default function Masthead({ edition, compact }: MastheadProps) {
+export default function Masthead({ edition, compact, onTitleClick }: MastheadProps) {
   if (compact) {
     return (
       <header className="masthead-compact">
-        <span className="masthead-compact-title">Chronoscapes</span>
+        <span
+          className="masthead-compact-title"
+          onClick={onTitleClick}
+          style={onTitleClick ? { cursor: 'pointer' } : undefined}
+        >Chronoscapes</span>
         <span className="masthead-compact-rule" />
         {edition ? (
           <span className="masthead-compact-edition">── {edition} ──</span>
