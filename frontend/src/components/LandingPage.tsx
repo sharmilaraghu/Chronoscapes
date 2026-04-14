@@ -1,11 +1,15 @@
+import sceneJazz   from '../images/DxeICoe57j_nT8nKdSOiv9Xrn_vBurtDC0Ff4vMIuF3B0p36o4EcTVnQVzBkgusXRHhcO3QNL4X0T0Zvo0EPldpm28PFGjkbAk-7XzjldYyu4TViuIG1O7KlesacrtZ1uteMT7ZK7E8vPyKEd9hohmuxzNfGinmB-JBihiXFQ8wSohQ1VbZaJy4igpQN1BKc.jpeg';
+import sceneStreet from '../images/f06e5sU1VjQDZG7MSlLPCGcSkD-ZkzqpOPpoZTHa7sY9NVTpFJkreQNMCixypiuhXT6m4AjX4LWpEhTtvyZVKhkVpbAp3IXQbZ-J6OQLV02qyBLO-ZiyaJNoKUSuKltA7HLoDJ4C39Pe4ckrUdFlnlot7WJ5AiVfEsAAbMTIRBTED6D2w5e5hy6iaY0ZHj_1.jpeg';
+import sceneMarket from '../images/NLwKhVo1iatYoFnF9uYGLFr7TIck6w0I9sP2Q6QAlca2fnCT7phh-GqGlvOrhdyDM_ysNe1HijhX_1FfBD2XZGqb1J2RoV2WTih-TByUm0hLhnQFpGNU2A2bGQeMmNt_oHXRjPcCoKBAxnIPJu9nNyoPF2VMQNIahSlDDKBtD5-35Qib41mitc6mHkf8V8ca.jpeg';
+
 interface LandingPageProps {
   onEnter: () => void;
 }
 
 const SCENES = [
-  { src: '/scene-jazz.jpeg',   alt: 'Jazz club, 1940s — musicians playing drums and maracas' },
-  { src: '/scene-street.jpeg', alt: 'Crowded city street, Gilded Age — horse-drawn carriages' },
-  { src: '/scene-market.jpeg', alt: 'Open-air market, early 1900s — vendors and street life' },
+  { src: sceneJazz,   alt: 'Jazz club, 1940s — musicians playing drums and maracas' },
+  { src: sceneStreet, alt: 'Crowded city street, Gilded Age — horse-drawn carriages' },
+  { src: sceneMarket, alt: 'Open-air market, early 1900s — vendors and street life' },
 ];
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
