@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     EMBEDDING_QUERY_PREFIX: str = "Represent this sentence for searching relevant passages: "
     HF_TOKEN: Optional[str] = None
-    USE_OPENROUTER: bool = False
+    USE_OPENROUTER: bool = True
     OPENROUTER_API_KEY: Optional[str] = None
 
     def cors_list(self) -> list[str]:
