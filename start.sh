@@ -1,7 +1,6 @@
 #!/bin/bash
 # ── Chronoscopes start script ─────────────────────────────────────────────────
-# Starts both the backend (Hono) and frontend (Vite) dev servers concurrently.
-# Requires: Node.js 18+, npm
+# Starts the Python FastAPI backend and React frontend dev servers concurrently.
 
 set -e
 
@@ -20,25 +19,25 @@ for PORT in 8000 5173 5174 5175 5176; do
   fi
 done
 
-# ── Backend ──────────────────────────────────────────────────────────────────
-BACKEND="$ROOT/backend"
+# ── Backend (Python FastAPI) ──────────────────────────────────────────────────
+BACKEND="$ROOT/backend_py"
 if [ ! -f "$BACKEND/.env" ]; then
-  echo "⚠  No .env found in backend/ — copying from .env.example"
+  echo "⚠  No .env found in backend_py/ — copying from .env.example"
   cp "$BACKEND/.env.example" "$BACKEND/.env"
-  echo "⚠  Please edit backend/.env and add your API keys before continuing."
+  echo "⚠  Please edit backend_py/.env and add your API keys before continuing."
 fi
 
 echo ""
-echo "▶  Starting backend on :8000 …"
+echo "▶  Starting Python backend on :8000 …"
 cd "$BACKEND"
-npm install --silent 2>/dev/null || true
-npm run dev &
+pip3 install --quiet -r requirements.txt 2>/dev/null || true
+python3 -m uvicorn app.main:app --port 8000 &
 BACKEND_PID=$!
 
 # Wait for backend to be ready
 sleep 3
 
-# ── Frontend ─────────────────────────────────────────────────────────────────
+# ── Frontend (React/Vite) ────────────────────────────────────────────────────
 FRONTEND="$ROOT/frontend"
 echo ""
 echo "▶  Starting frontend on :5173 …"
@@ -60,7 +59,6 @@ cleanup() {
   echo ""
   echo "Stopping servers…"
   kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
-  # Also kill any children spawned by npm run dev
   pkill -P $BACKEND_PID 2>/dev/null || true
   pkill -P $FRONTEND_PID 2>/dev/null || true
   exit 0
