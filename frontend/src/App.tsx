@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { warmCache } from './lib/api';
 import type { Era } from './lib/types';
-import { useChronoscope } from './hooks/useChronoscope';
+import { useChronoscape } from './hooks/useChronoscape';
 import LandingPage from './components/LandingPage';
 
 import Masthead from './components/layout/Masthead';
 import NewspaperLayout from './components/layout/NewspaperLayout';
 import SearchBar from './components/search/SearchBar';
-import ChronoscopeMap from './components/map/ChronoscopeMap';
+import ChronoscapeMap from './components/map/ChronoscapeMap';
 import AudioPlayer from './components/audio/AudioPlayer';
 import SourcePanel from './components/sources/SourcePanel';
 import ReconstructedScene from './components/ReconstructedScene';
@@ -46,7 +46,7 @@ export default function App() {
     deselectChunk,
     confirmSelection,
     reset,
-  } = useChronoscope();
+  } = useChronoscape();
 
   const [currentPlace, setCurrentPlace] = useState('');
   const [currentEra, setCurrentEra] = useState<Era | undefined>(undefined);
@@ -127,7 +127,7 @@ export default function App() {
           showCenter={appState === 'ready' && (!!musicUrl || !!sfxUrl)}
           left={
             <div className={appState === 'ready' ? 'map-panel map-panel--compact' : 'map-panel'}>
-              <ChronoscopeMap
+              <ChronoscapeMap
                 center={mapCenter}
                 locationLabel={currentPlace}
                 onLocationSelect={handleLocationSelect}

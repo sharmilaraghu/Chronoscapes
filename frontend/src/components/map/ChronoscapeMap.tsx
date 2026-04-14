@@ -66,7 +66,7 @@ function MapClickHandler({ onLocationSelect, disabled }: MapClickHandlerProps) {
   return null;
 }
 
-interface ChronoscopeMapProps {
+interface ChronoscapeMapProps {
   center?: [number, number];
   locationLabel?: string;
   onLocationSelect?: (placeName: string, coords: [number, number]) => void;
@@ -74,11 +74,11 @@ interface ChronoscopeMapProps {
 
 const DEFAULT_CENTER: [number, number] = [40.7831, -73.9712];
 
-export default function ChronoscopeMap({
+export default function ChronoscapeMap({
   center,
   locationLabel,
   onLocationSelect,
-}: ChronoscopeMapProps) {
+}: ChronoscapeMapProps) {
   const mapCenter = center ?? DEFAULT_CENTER;
   const isInteractive = !!onLocationSelect;
 

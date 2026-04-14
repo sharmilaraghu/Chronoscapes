@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { searchPassages, analyzePassages, synthesizeScene } from '../lib/api';
 import type { AppState, Era, Passage, ChunkAnalysis, SynthesizedScene } from '../lib/types';
 
-interface ChronoscopeResult {
+interface ChronoscapeResult {
   appState: AppState;
   passages: Passage[];
   analyzedChunks: ChunkAnalysis[];
@@ -21,7 +21,7 @@ interface ChronoscopeResult {
   reset: () => void;
 }
 
-export function useChronoscope(): ChronoscopeResult {
+export function useChronoscape(): ChronoscapeResult {
   const [appState, setAppState] = useState<AppState>('idle');
   const [passages, setPassages] = useState<Passage[]>([]);
   const [analyzedChunks, setAnalyzedChunks] = useState<ChunkAnalysis[]>([]);

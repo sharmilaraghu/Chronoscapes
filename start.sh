@@ -1,5 +1,5 @@
 #!/bin/bash
-# ── Chronoscopes start script ─────────────────────────────────────────────────
+# ── Chronoscapes start script ─────────────────────────────────────────────────
 # Starts the Python FastAPI backend and React frontend dev servers concurrently.
 
 set -e
@@ -7,7 +7,7 @@ set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 echo "═══════════════════════════════════════"
-echo "  The Chronoscopes — Starting Servers"
+echo "  Chronoscapes — Starting Servers"
 echo "═══════════════════════════════════════"
 
 # ── Kill any leftover processes on our ports ──────────────────────────────────

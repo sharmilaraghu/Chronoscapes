@@ -28,7 +28,7 @@ limiter = Limiter(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting Chronoscopes Python backend", port=settings.PORT)
+    logger.info("Starting Chronoscapes Python backend", port=settings.PORT)
     logger.info(
         "Configured APIs",
         gemini=bool(settings.GEMINI_API_KEY),
@@ -43,13 +43,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("Cache warm-up failed (non-fatal)", error=str(e))
     yield
-    logger.info("Chronoscopes backend shutting down")
+    logger.info("Chronoscapes backend shutting down")
 
 
 # ── App ────────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="Chronoscopes API",
+    title="Chronoscapes API",
     description="Acoustic time-travel via archival newspaper text",
     lifespan=lifespan,
 )

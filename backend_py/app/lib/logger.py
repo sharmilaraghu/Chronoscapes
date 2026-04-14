@@ -20,5 +20,5 @@ structlog.configure(
 )
 
 
-def get_logger(name: str = "chronoscopes"):
+def get_logger(name: str = "chronoscapes"):
     return structlog.get_logger(name)

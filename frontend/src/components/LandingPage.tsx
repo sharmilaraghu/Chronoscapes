@@ -18,7 +18,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         <div className="landing-rule" />
 
         {/* Title */}
-        <h1 className="landing-title">Chronoscopes</h1>
+        <h1 className="landing-title">Chronoscapes</h1>
 
         {/* Tagline */}
         <p className="landing-tagline">Acoustic Time Travel</p>
