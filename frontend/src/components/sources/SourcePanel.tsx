@@ -1,61 +1,63 @@
-import { useEffect, useRef, useState } from 'react';
-import type { Passage } from '../../lib/types';
-import ClippingCard from './ClippingCard';
+import type { ChunkAnalysis } from '../../lib/types';
+import DispatchCard from './DispatchCard';
 
 interface SourcePanelProps {
-  passages: Passage[];
+  analyzedChunks: ChunkAnalysis[];
+  rawTextById: Map<string, string>;
+  selectedChunkIds: string[];
+  onToggleChunk: (id: string) => void;
+  onConfirmSelection: () => void;
+  appState: string;
   hasSearched: boolean;
-  isLoading: boolean;
-  onPassageSelect?: (passage: Passage) => void;
-  selectedState?: boolean;
 }
 
-const AUTO_PROCEED_SECONDS = 8;
-
 export default function SourcePanel({
-  passages,
+  analyzedChunks,
+  rawTextById,
+  selectedChunkIds,
+  onToggleChunk,
+  onConfirmSelection,
+  appState,
   hasSearched,
-  isLoading,
-  onPassageSelect,
-  selectedState,
 }: SourcePanelProps) {
-  const [countdown, setCountdown] = useState(AUTO_PROCEED_SECONDS);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const autoProceedRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (selectedState && passages.length > 0 && onPassageSelect) {
-      setCountdown(AUTO_PROCEED_SECONDS);
-      intervalRef.current = setInterval(() => {
-        setCountdown((n) => Math.max(0, n - 1));
-      }, 1000);
-      autoProceedRef.current = setTimeout(() => {
-        onPassageSelect(passages[0]);
-      }, AUTO_PROCEED_SECONDS * 1000);
-    } else {
-      setCountdown(AUTO_PROCEED_SECONDS);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (autoProceedRef.current) clearTimeout(autoProceedRef.current);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (autoProceedRef.current) clearTimeout(autoProceedRef.current);
-    };
-  }, [selectedState, passages, onPassageSelect]);
-
-  const countdownFraction = countdown / AUTO_PROCEED_SECONDS;
-
-  const isEmpty = !isLoading && passages.length === 0;
+  const isLoading = appState === 'analyzing';
+  const isSynthesizing = appState === 'synthesizing';
+  const isEmpty = !isLoading && analyzedChunks.length === 0;
   const noResults = isEmpty && hasSearched;
+
+  // Sort: soundKeywords desc, failed last
+  const sortedChunks = [...analyzedChunks].sort((a, b) => {
+    if (a.error && !b.error) return 1;
+    if (!a.error && b.error) return -1;
+    return b.soundKeywords.length - a.soundKeywords.length;
+  });
 
   return (
     <div className="source-panel">
       <h2 className="source-panel-header">Dispatches from the Archive</h2>
 
+      {/* Loading state — analyzing chunks */}
       {isLoading && (
         <div className="source-panel-loading">
-          <p className="telegraph-blink">Searching the Archive</p>
-          <p style={{ marginTop: '0.4rem', fontSize: '0.65rem', opacity: 0.6 }}>Retrieving historical dispatches…</p>
+          <p className="telegraph-blink">Analyzing Archive Dispatches</p>
+          <p style={{ marginTop: '0.4rem', fontSize: '0.65rem', opacity: 0.6 }}>
+            Extracting sound signatures from historical records…
+          </p>
+          <div className="dispatch-loading-skeleton">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton-card" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Synthesizing state */}
+      {isSynthesizing && (
+        <div className="source-panel-loading">
+          <p className="telegraph-blink">Composing Soundscape</p>
+          <p style={{ marginTop: '0.4rem', fontSize: '0.65rem', opacity: 0.6 }}>
+            Merging selected dispatches into a coherent audio scene…
+          </p>
         </div>
       )}
 
@@ -85,44 +87,40 @@ export default function SourcePanel({
         </div>
       )}
 
-      {/* Countdown bar */}
-      {selectedState && passages.length > 0 && (
-        <div className="source-countdown-bar">
-          <div
-            className="source-countdown-fill"
-            style={{ width: `${countdownFraction * 100}%` }}
-          />
-          <div className="source-countdown-label">
-            <span style={{ fontFamily: 'var(--font-caption)', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-ink-faded)' }}>
-              Click a dispatch to compose its soundscape · auto-selects in {countdown}s
+      {/* Dispatch cards — sorted by soundKeywords count */}
+      {sortedChunks.length > 0 && !isLoading && !isSynthesizing && (
+        <>
+          <div className="dispatch-selection-hint">
+            <span>Select 1–3 dispatches to compose your soundscape</span>
+            <span className="dispatch-selection-count">
+              {selectedChunkIds.length}/3 selected
             </span>
           </div>
-        </div>
-      )}
 
-      <div>
-        {passages.map((passage, i) => (
-          <div
-            key={passage.id}
-            className={selectedState ? 'clipping-wrapper clipping-wrapper--selectable' : 'clipping-wrapper'}
-            onClick={() => {
-              if (autoProceedRef.current) clearTimeout(autoProceedRef.current);
-              if (intervalRef.current) clearInterval(intervalRef.current);
-              onPassageSelect?.(passage);
-            }}
-          >
-            <ClippingCard passage={passage} index={i} dimmed={false} />
-            {selectedState && (
-              <div className="clipping-select-badge">Select this dispatch →</div>
-            )}
+          <div className="dispatch-list">
+            {sortedChunks.map((chunk, i) => (
+              <DispatchCard
+                key={chunk.id}
+                analysis={chunk}
+                rawText={rawTextById.get(chunk.id) ?? ''}
+                selected={selectedChunkIds.includes(chunk.id)}
+                onToggle={onToggleChunk}
+                index={i}
+              />
+            ))}
           </div>
-        ))}
-      </div>
 
-      {passages.length > 0 && !selectedState && (
-        <p className="source-panel-count">
-          {passages.length} record{passages.length !== 1 ? 's' : ''} retrieved
-        </p>
+          {/* Confirm button — only when in selected state */}
+          {appState === 'selected' && selectedChunkIds.length > 0 && (
+            <button
+              className="dispatch-confirm-button"
+              onClick={onConfirmSelection}
+              type="button"
+            >
+              ✦ Compose Soundscape ({selectedChunkIds.length} dispatch{selectedChunkIds.length !== 1 ? 's' : ''})
+            </button>
+          )}
+        </>
       )}
     </div>
   );

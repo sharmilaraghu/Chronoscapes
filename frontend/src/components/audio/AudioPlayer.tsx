@@ -34,7 +34,7 @@ export default function AudioPlayer({
   }, [musicUrl]);
 
   const hasAudio = !!musicUrl;
-  const isGenerating = appState === 'generating';
+  const isSynthesizing = appState === 'synthesizing' || appState === 'analyzing';
   const isReady = appState === 'ready';
   const isSearching = appState === 'searching';
   const eraLabel = era ? ERA_LABELS[era] : null;
@@ -54,7 +54,7 @@ export default function AudioPlayer({
       <WaveformViz
         analyserNode={analyserNode}
         isPlaying={isPlaying}
-        isSynthesizing={isGenerating}
+        isSynthesizing={isSynthesizing}
       />
 
       {/* State messages */}
@@ -63,13 +63,13 @@ export default function AudioPlayer({
           <span className="telegraph-blink">Searching Archive</span>
         </div>
       )}
-      {isGenerating && (
+      {isSynthesizing && (
         <div className="radio-status-label">
           <span className="telegraph-blink">Composing Soundscape</span>
           <span className="radio-generating-dots"> . . .</span>
         </div>
       )}
-      {!hasAudio && !isGenerating && !isSearching && (
+      {!hasAudio && !isSynthesizing && !isSearching && (
         <div className="radio-idle-hint">
           {/* Static signal bars */}
           <div className="radio-signal-bars">

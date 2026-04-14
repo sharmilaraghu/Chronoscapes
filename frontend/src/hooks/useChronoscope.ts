@@ -1,42 +1,52 @@
 import { useState, useCallback } from 'react';
-import { searchPassages, generateAudio } from '../lib/api';
-import type { AppState, Era, Passage } from '../lib/types';
+import { searchPassages, analyzePassages, synthesizeScene } from '../lib/api';
+import type { AppState, Era, Passage, ChunkAnalysis, SynthesizedScene } from '../lib/types';
 
 interface ChronoscopeResult {
   appState: AppState;
   passages: Passage[];
-  hasSearched: boolean;
+  analyzedChunks: ChunkAnalysis[];
+  selectedChunkIds: string[];
+  rawTextById: Map<string, string>;
+  synthesizedScene: SynthesizedScene | null;
   musicUrl: string | null;
   sfxUrl: string | null;
-  musicPrompt: string | null;
-  sfxPrompt: string | null;
+  hasSearched: boolean;
   error: string | null;
+  correlationId: string | null;
   search: (query: string, era: Era | undefined) => Promise<void>;
-  generate: (passage: Passage) => Promise<void>;
+  selectChunk: (id: string) => void;
+  deselectChunk: (id: string) => void;
+  confirmSelection: () => Promise<void>;
   reset: () => void;
 }
 
 export function useChronoscope(): ChronoscopeResult {
   const [appState, setAppState] = useState<AppState>('idle');
   const [passages, setPassages] = useState<Passage[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [lastQuery, setLastQuery] = useState<string>('');
+  const [analyzedChunks, setAnalyzedChunks] = useState<ChunkAnalysis[]>([]);
+  const [selectedChunkIds, setSelectedChunkIds] = useState<string[]>([]);
+  const [rawTextById] = useState<Map<string, string>>(new Map());
+  const [synthesizedScene, setSynthesizedScene] = useState<SynthesizedScene | null>(null);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [sfxUrl, setSfxUrl] = useState<string | null>(null);
-  const [musicPrompt, setMusicPrompt] = useState<string | null>(null);
-  const [sfxPrompt, setSfxPrompt] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [correlationId, setCorrelationId] = useState<string | null>(null);
 
   const reset = useCallback(() => {
     setAppState('idle');
     setPassages([]);
-    setHasSearched(false);
+    setAnalyzedChunks([]);
+    setSelectedChunkIds([]);
+    rawTextById.clear();
+    setSynthesizedScene(null);
     setMusicUrl(null);
     setSfxUrl(null);
-    setMusicPrompt(null);
-    setSfxPrompt(null);
+    setHasSearched(false);
     setError(null);
-  }, []);
+    setCorrelationId(null);
+  }, [rawTextById]);
 
   const search = useCallback(async (query: string, era: Era | undefined) => {
     reset();
@@ -44,7 +54,6 @@ export function useChronoscope(): ChronoscopeResult {
 
     try {
       setAppState('searching');
-      setLastQuery(query);
       const res = await searchPassages({ query, era, limit: 8 });
 
       if (!res.success) {
@@ -52,54 +61,122 @@ export function useChronoscope(): ChronoscopeResult {
       }
 
       const found = res.data.passages;
-      setPassages(found);
-      setHasSearched(true);
-
       if (found.length === 0) {
+        setPassages([]);
+        setHasSearched(true);
         setAppState('idle');
         return;
       }
 
+      // Preserve raw text for View Source toggle
+      found.forEach((p) => rawTextById.set(p.id, p.text));
+
+      setPassages(found);
+      setHasSearched(true);
+
+      // Phase 1: analyze all chunks (one batch LLM call)
+      setAppState('analyzing');
+      const analyzeRes = await analyzePassages({ passages: found });
+
+      if (!analyzeRes.success) {
+        throw new Error(analyzeRes.error ?? 'Analysis failed');
+      }
+
+      // Extract correlation ID from metadata if available
+      if (analyzeRes.metadata?.correlationId) {
+        setCorrelationId(analyzeRes.metadata.correlationId as string);
+      }
+
+      const analyses = analyzeRes.data.analyses;
+      setAnalyzedChunks(analyses);
+
+      // Auto-select top 3 by soundKeywords count
+      const autoSelected = [...analyses]
+        .filter((a) => !a.error) // don't auto-select failed chunks
+        .sort((a, b) => b.soundKeywords.length - a.soundKeywords.length)
+        .slice(0, 3)
+        .map((a) => a.id);
+
+      setSelectedChunkIds(autoSelected);
       setAppState('selected');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
+      setError(err instanceof Error ? err.message : 'Search/analysis failed');
       setAppState('error');
     }
-  }, [reset]);
+  }, [reset, rawTextById]);
 
-  const generate = useCallback(async (passage: Passage) => {
+  const selectChunk = useCallback((id: string) => {
+    setSelectedChunkIds((prev) => {
+      if (prev.includes(id)) return prev;
+      if (prev.length >= 3) return prev; // max 3 selections
+      return [...prev, id];
+    });
+  }, []);
+
+  const deselectChunk = useCallback((id: string) => {
+    setSelectedChunkIds((prev) => prev.filter((chunkId) => chunkId !== id));
+  }, []);
+
+  const confirmSelection = useCallback(async () => {
+    if (selectedChunkIds.length === 0) return;
+
     setError(null);
 
     try {
-      setAppState('generating');
-      const res = await generateAudio({ passage, query: lastQuery || passage.title });
+      setAppState('synthesizing');
+
+      const selectedAnalyses = analyzedChunks.filter(
+        (a) => selectedChunkIds.includes(a.id),
+      );
+
+      // Find city/era from passages using the analyzed chunk IDs
+      const selectedPassages = passages.filter((p) =>
+        selectedChunkIds.includes(p.id),
+      );
+
+      const city = selectedPassages[0]?.location ?? 'Unknown';
+      const era = selectedPassages[0]?.era ?? 'Jazz_Age';
+
+      const res = await synthesizeScene({
+        analyses: selectedAnalyses,
+        city,
+        era,
+      });
 
       if (!res.success) {
-        throw new Error(res.error ?? 'Generation failed');
+        throw new Error(res.error ?? 'Synthesis failed');
       }
 
+      if (res.metadata?.correlationId) {
+        setCorrelationId(res.metadata.correlationId as string);
+      }
+
+      setSynthesizedScene(res.data.scene);
       setMusicUrl(res.data.musicUrl);
       setSfxUrl(res.data.sfxUrl);
-      setMusicPrompt(res.data.musicPrompt);
-      setSfxPrompt(res.data.sfxPrompt);
       setAppState('ready');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Generation failed');
+      setError(err instanceof Error ? err.message : 'Synthesis failed');
       setAppState('error');
     }
-  }, [lastQuery]);
+  }, [selectedChunkIds, analyzedChunks, passages]);
 
   return {
     appState,
     passages,
-    hasSearched,
+    analyzedChunks,
+    selectedChunkIds,
+    rawTextById,
+    synthesizedScene,
     musicUrl,
     sfxUrl,
-    musicPrompt,
-    sfxPrompt,
+    hasSearched,
     error,
+    correlationId,
     search,
-    generate,
+    selectChunk,
+    deselectChunk,
+    confirmSelection,
     reset,
   };
 }

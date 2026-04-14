@@ -61,4 +61,73 @@ export interface GenerateResponse {
   metadata?: Record<string, unknown>;
 }
 
-export type AppState = 'idle' | 'searching' | 'selected' | 'generating' | 'ready' | 'error';
+export type AppState = 'idle' | 'searching' | 'analyzing' | 'selected' | 'synthesizing' | 'ready' | 'error';
+
+// Phase 1: structured extraction output
+export interface ChunkAnalysis {
+  id: string;
+  cleanTitle: string;
+  summary: string;
+  soundKeywords: string[];
+  highlightPhrases: string[];
+  soundProfile: {
+    primary: string[];
+    secondary: string[];
+    environment: string;
+    timeOfDay: string;
+    intensity: string;
+  };
+  error?: true;
+}
+
+// Phase 4: final synthesized scene
+export interface SynthesizedScene {
+  sceneSummary: string;
+  dominantSounds: string[];
+  secondarySounds: string[];
+  backgroundSounds: string[];
+  environment: string;
+  timeOfDay: string;
+  acousticProfile: string;
+  intensity: string;
+  musicPrompt: string;
+  sfxPrompt: string;
+}
+
+// Phase 1 result bundle
+export interface AnalyzeResult {
+  analyses: ChunkAnalysis[];
+  mode: 'batch' | 'per_chunk' | 'partial';
+  failedIds: string[];
+  durationMs: number;
+  truncationEvents: string[];
+}
+
+// API response types for new endpoints
+export interface AnalyzeRequest {
+  passages: Passage[];
+}
+
+export interface AnalyzeResponse {
+  success: boolean;
+  data: AnalyzeResult;
+  error?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface SynthesizeRequest {
+  analyses: ChunkAnalysis[];
+  city: string;
+  era: Era;
+}
+
+export interface SynthesizeResponse {
+  success: boolean;
+  data: {
+    scene: SynthesizedScene;
+    musicUrl: string;
+    sfxUrl: string;
+  };
+  error?: string;
+  metadata?: Record<string, unknown>;
+}

@@ -1073,4 +1073,381 @@
       border: var(--border-ink);
     }
   }
+
+  /* ── Dispatch Card (analyzed chunk) — old newspaper / parchment style ── */
+  .dispatch-card {
+    background-color: var(--color-paper-worn);
+    box-shadow: var(--shadow-clipping);
+    padding: 0.85rem 1rem;
+    padding-top: 0.5rem;
+    position: relative;
+    border: 0.5px solid rgba(44, 32, 22, 0.3);
+    border-top: 3px double var(--color-ink);
+    transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+    margin-bottom: 1rem;
+  }
+
+  /* Halftone newspaper texture overlay */
+  .dispatch-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(26,18,8,0.08) 1px, transparent 1px);
+    background-size: 4px 4px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .dispatch-card:hover {
+    box-shadow: var(--shadow-lifted);
+  }
+
+  .dispatch-card--selected {
+    border-left: 3px solid var(--color-masthead-red);
+    box-shadow: var(--shadow-lifted);
+  }
+
+  .dispatch-card--failed {
+    opacity: 0.55;
+  }
+
+  .dispatch-checkbox-wrapper {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+  }
+
+  .dispatch-checkbox {
+    display: none;
+  }
+
+  .dispatch-checkbox-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 1.5px solid var(--color-ink-light);
+    font-size: 0.8rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+  }
+
+  .dispatch-card--selected .dispatch-checkbox-label {
+    background: var(--color-masthead-red);
+    border-color: var(--color-masthead-red);
+    color: var(--color-paper);
+  }
+
+  .dispatch-card--failed .dispatch-checkbox-label {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .dispatch-error-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    font-family: var(--font-caption);
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-paper);
+    background: var(--color-masthead-red);
+    padding: 0.15rem 0.4rem;
+  }
+
+  .dispatch-header {
+    margin-bottom: 0.5rem;
+    padding-right: 2rem;
+  }
+
+  .dispatch-era-badge {
+    display: inline-block;
+    font-family: var(--font-caption);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-faded);
+    background: var(--color-paper-dark);
+    padding: 0.1rem 0.35rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .dispatch-title {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    color: var(--color-ink);
+    margin: 0;
+  }
+
+  .dispatch-summary {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--color-ink-faded);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .dispatch-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .dispatch-keyword-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-family: var(--font-caption);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--color-ink);
+    background: var(--color-paper-dark);
+    border: 0.5px solid var(--color-ink-light);
+    padding: 0.15rem 0.4rem;
+    cursor: default;
+  }
+
+  .dispatch-highlights {
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid var(--color-highlight);
+  }
+
+  .dispatch-highlight-quote {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--color-ink-faded);
+    margin: 0.2rem 0;
+  }
+
+  .dispatch-meta {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .dispatch-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--font-caption);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-light);
+  }
+
+  .dispatch-meta-icon {
+    font-size: 0.7rem;
+  }
+
+  .dispatch-source-toggle {
+    font-family: var(--font-caption);
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-ink-faded);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem 0;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .dispatch-source-toggle:hover {
+    opacity: 1;
+    color: var(--color-ink);
+  }
+
+  .dispatch-source-text {
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    line-height: 1.5;
+    color: var(--color-ink-faded);
+    background: var(--color-paper-dark);
+    border: 0.5px solid var(--color-ink-light);
+    padding: 0.6rem;
+    margin-top: 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* ── Dispatch list / selection ── */
+  .dispatch-selection-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-faded);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 0.5px solid var(--color-ink-light);
+  }
+
+  .dispatch-selection-count {
+    color: var(--color-masthead-red);
+  }
+
+  .dispatch-confirm-button {
+    display: block;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.65rem;
+    font-family: var(--font-caption);
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    text-align: center;
+  }
+
+  .dispatch-confirm-button:hover {
+    background: var(--color-masthead-red);
+  }
+
+  .dispatch-confirm-button:active {
+    transform: translateY(1px);
+  }
+
+  /* ── Loading skeleton ── */
+  .dispatch-loading-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .skeleton-card {
+    height: 140px;
+    background: linear-gradient(
+      90deg,
+      var(--color-paper-dark) 0%,
+      var(--color-paper-worn) 50%,
+      var(--color-paper-dark) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+    border: 0.5px solid var(--color-ink-light);
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Reconstructed Scene ── */
+  .reconstructed-scene {
+    background: var(--color-paper-worn);
+    border: var(--border-ink-thick);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .reconstructed-scene-header {
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--color-masthead-red);
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 0.5px solid var(--color-masthead-red);
+  }
+
+  .reconstructed-scene-summary {
+    font-family: var(--font-headline);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--color-ink);
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+
+  .reconstructed-scene-sounds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .reconstructed-scene-sound-tag {
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--color-paper);
+    background: var(--color-ink);
+    padding: 0.2rem 0.5rem;
+  }
+
+  .reconstructed-scene-sound-tag--dominant {
+    background: var(--color-masthead-red);
+  }
+
+  .reconstructed-scene-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .reconstructed-scene-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-faded);
+  }
+
+  .reconstructed-scene-intensity-bar {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .reconstructed-scene-intensity-fill {
+    width: 8px;
+    height: 12px;
+    background: var(--color-masthead-red);
+  }
+
+  .reconstructed-scene-intensity-fill--empty {
+    background: var(--color-paper-dark);
+    border: 0.5px solid var(--color-ink-light);
+  }
+
+  /* ── Chronoscape Radio (scene output) ── */
+  .chronoscape-radio {
+    margin-top: 0.5rem;
+  }
+
+  .chronoscape-radio-label {
+    font-family: var(--font-caption);
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #c8a84b;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
 }

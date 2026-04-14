@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { warmCache } from './lib/api';
-import type { Era, Passage } from './lib/types';
+import type { Era } from './lib/types';
 import { useChronoscope } from './hooks/useChronoscope';
 import LandingPage from './components/LandingPage';
 
@@ -10,17 +10,21 @@ import SearchBar from './components/search/SearchBar';
 import ChronoscopeMap from './components/map/ChronoscopeMap';
 import AudioPlayer from './components/audio/AudioPlayer';
 import SourcePanel from './components/sources/SourcePanel';
+import ReconstructedScene from './components/ReconstructedScene';
 
 const STEPS = [
   { key: 'query',    label: '① Query the Archive' },
-  { key: 'select',   label: '② Select a Dispatch' },
-  { key: 'listen',   label: '③ Listen' },
+  { key: 'analyze',  label: '② Analyze Dispatches' },
+  { key: 'select',   label: '③ Select & Compose' },
+  { key: 'listen',   label: '④ Listen' },
 ] as const;
 
 function getActiveStep(appState: string) {
-  if (appState === 'idle' || appState === 'searching') return 'query';
-  if (appState === 'selected') return 'select';
-  return 'listen';
+  if (appState === 'idle') return 'query';
+  if (appState === 'searching' || appState === 'analyzing') return 'analyze';
+  if (appState === 'selected' || appState === 'synthesizing') return 'select';
+  if (appState === 'ready') return 'listen';
+  return 'query';
 }
 
 export default function App() {
@@ -29,14 +33,18 @@ export default function App() {
   const {
     appState,
     passages,
-    hasSearched,
+    analyzedChunks,
+    selectedChunkIds,
+    rawTextById,
+    synthesizedScene,
     musicUrl,
     sfxUrl,
-    musicPrompt,
-    sfxPrompt,
+    hasSearched,
     error,
     search,
-    generate,
+    selectChunk,
+    deselectChunk,
+    confirmSelection,
     reset,
   } = useChronoscope();
 
@@ -62,11 +70,15 @@ export default function App() {
     search(placeName, currentEra);
   }
 
-  function handlePassageSelect(passage: Passage) {
-    generate(passage);
+  function handleToggleChunk(id: string) {
+    if (selectedChunkIds.includes(id)) {
+      deselectChunk(id);
+    } else {
+      selectChunk(id);
+    }
   }
 
-  const isLoading = appState === 'searching' || appState === 'generating';
+  const isLoading = appState === 'searching' || appState === 'analyzing' || appState === 'synthesizing';
   const activeStep = getActiveStep(appState);
 
   const edition =
@@ -112,7 +124,7 @@ export default function App() {
       {/* Three-column layout */}
       <div className="layout-body">
         <NewspaperLayout
-          showCenter={appState === 'generating' || appState === 'ready'}
+          showCenter={appState === 'ready' && (!!musicUrl || !!sfxUrl)}
           left={
             <ChronoscopeMap
               center={mapCenter}
@@ -121,23 +133,39 @@ export default function App() {
             />
           }
           center={
-            <AudioPlayer
-              musicUrl={musicUrl}
-              sfxUrl={sfxUrl}
-              synthesizedPrompt={sfxPrompt ?? musicPrompt}
-              era={currentEra}
-              location={currentPlace}
-              appState={appState}
-              onReset={reset}
-            />
+            <>
+              {/* Audio player — top, only when ready AND audio is present */}
+              {appState === 'ready' && (musicUrl || sfxUrl) ? (
+                <AudioPlayer
+                  musicUrl={musicUrl}
+                  sfxUrl={sfxUrl}
+                  synthesizedPrompt={synthesizedScene?.sfxPrompt ?? synthesizedScene?.musicPrompt ?? null}
+                  era={currentEra}
+                  location={currentPlace}
+                  appState={appState}
+                  onReset={reset}
+                />
+              ) : null}
+
+              {/* Scene reconstruction — below radio, only when ready */}
+              {appState === 'ready' && synthesizedScene ? (
+                <ReconstructedScene
+                  scene={synthesizedScene}
+                  musicUrl={musicUrl ?? null}
+                  sfxUrl={sfxUrl ?? null}
+                />
+              ) : null}
+            </>
           }
           right={
             <SourcePanel
-              passages={passages}
+              analyzedChunks={analyzedChunks}
+              rawTextById={rawTextById}
+              selectedChunkIds={selectedChunkIds}
+              onToggleChunk={handleToggleChunk}
+              onConfirmSelection={confirmSelection}
+              appState={appState}
               hasSearched={hasSearched}
-              isLoading={appState === 'searching'}
-              onPassageSelect={appState === 'selected' ? handlePassageSelect : undefined}
-              selectedState={appState === 'selected'}
             />
           }
         />
