@@ -16,10 +16,11 @@ import { join, dirname } from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenvConfig({ path: join(__dirname, "..", ".env") });
 
-const PG_DSN =
-  process.env.PG_DSN ||
-  "postgresql://chrono:chrono@localhost:5432/chronoscopes";
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+const PG_DSN = process.env.PG_DSN;
+if (!PG_DSN) throw new Error("PG_DSN environment variable is required");
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY environment variable is required");
 const DELAY_MS = 2000; // pause between Gemini calls to stay within rate limits
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
