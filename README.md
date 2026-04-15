@@ -33,7 +33,7 @@ Drop a pin anywhere on the map and Chronoscapes queries the archive for newspape
 
 ## How it works
 
-You type a place and a time — *"Chicago, 1919"* or *"London, 1940"* — and Chronoscapes searches a semantic index of **4.47 million** historical newspaper passages from the AmericanStories dataset. The passages that come back aren't random: they're the ones whose language is closest to your query, ranked by vector similarity across nearly five million archived articles.
+You type anything — a place, a year, a scene, an incident, a mood — *"a Harlem jazz club at midnight"* or *"soldiers at a WWI campfire"* or *"the Gold Rush frontier"* — and Chronoscapes searches a semantic index of **4.47 million** historical newspaper passages from the AmericanStories dataset. The passages that come back aren't random: they're the ones whose language is closest to your query, ranked by vector similarity across nearly five million archived articles.
 
 From there, the pipeline runs in four stages:
 
