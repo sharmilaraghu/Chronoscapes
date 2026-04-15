@@ -134,3 +134,35 @@ export interface SynthesizeResponse {
   error?: string;
   metadata?: Record<string, unknown>;
 }
+
+// ── Chrono Radio ─────────────────────────────────────────────────────────────
+
+export type RadioState =
+  | 'idle'
+  | 'loading'
+  | 'playing-dj'
+  | 'playing-music'
+  | 'buffering';
+
+export interface RadioTrack {
+  ttsUrl: string;
+  musicUrl: string;
+  sfxUrl: string;
+  scene: SynthesizedScene;
+  djScript: string;
+  city: string;
+}
+
+export interface RadioNextRequest {
+  query: string;
+  era?: Era;
+  previousSummary?: string;  // scene summary of the track currently playing
+  trackNumber?: number;      // 1-indexed; used to switch DJ intro style
+}
+
+export interface RadioNextResponse {
+  success: boolean;
+  data: RadioTrack;
+  error?: string;
+  metadata?: Record<string, unknown>;
+}

@@ -625,6 +625,30 @@
     border-color: #c8a84b;
   }
 
+  /* ── Chrono Radio: start button (shown below AudioPlayer when ready) ── */
+  .radio-chrono-start-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-family: var(--font-caption);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-masthead-red, #8b1a1a);
+    background: transparent;
+    border: 1px solid var(--color-masthead-red, #8b1a1a);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .radio-chrono-start-btn:hover {
+    background: rgba(139, 26, 26, 0.08);
+    border-color: #b02020;
+    color: #b02020;
+  }
+
   /* ── Era selector: horizontal scroll on mobile ── */
   .era-tabs {
     overflow-x: auto;
@@ -954,6 +978,17 @@
     width: 4px;
     background: #c8a84b;
     border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── Radio: ON AIR pulsing dot ── */
+  .radio-on-air-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-masthead-red, #8b1a1a);
+    animation: pulse-red 1.2s ease-in-out infinite;
     flex-shrink: 0;
   }
 

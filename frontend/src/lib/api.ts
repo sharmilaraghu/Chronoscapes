@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { SearchRequest, SearchResponse, AnalyzeRequest, AnalyzeResponse, SynthesizeRequest, SynthesizeResponse } from './types';
+import type { SearchRequest, SearchResponse, AnalyzeRequest, AnalyzeResponse, SynthesizeRequest, SynthesizeResponse, RadioNextRequest, RadioNextResponse, RadioTrack } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 const client = axios.create({ baseURL: `${BASE_URL}/api` });
@@ -23,4 +23,16 @@ export async function synthesizeScene(request: SynthesizeRequest): Promise<Synth
 
 export async function warmCache(): Promise<void> {
   await client.get('/health').catch(() => undefined);
+}
+
+// Chrono Radio — fetch the next track (full pipeline: search → analyze → synthesize → TTS)
+export async function fetchRadioNext(
+  request: RadioNextRequest,
+  signal?: AbortSignal,
+): Promise<RadioTrack> {
+  const { data } = await client.post<RadioNextResponse>('/radio/next', request, { signal });
+  if (!data.success || !data.data) {
+    throw new Error(data.error ?? 'Radio track generation failed');
+  }
+  return data.data;
 }

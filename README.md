@@ -14,7 +14,7 @@
 
 Centuries of music were never recorded. The only evidence that it existed at all is buried in the text of old newspapers — reviews of performances, advertisements for dance halls, dispatches from the front describing soldiers singing around fires. Chronoscapes reads those archives and recreates the music they describe: complete with lyrics written in the vernacular of the era, melody shaped by the instruments and rhythms the passages mention, and ambient sound layered beneath it.
 
-No recordings. No samples. Just historical evidence, AI synthesis, and ElevenLabs turning it into sound.
+No recordings. No samples. Just historical evidence, AI synthesis, and ElevenLabs turning it into sound. Or let it run — **Chrono Radio** turns the archive into a non-stop broadcast: era-accurate music announced by a period-appropriate radio host, next track pre-generated in the background so the past never goes quiet.
 
 > **4.47 million** historical newspaper passages indexed in turbopuffer. Warm-cache query latency: **~8ms**.
 
@@ -35,6 +35,12 @@ The retrieved passages aren't summaries or paraphrases — they're real 19th and
 ![Map search — pick any city or region to query its historical soundscape](https://github.com/user-attachments/assets/0082dd4b-0343-4ef5-8406-3c4e15fef72c)
 
 Drop a pin anywhere on the map and Chronoscapes queries the archive for newspaper passages from that place. The same RAG pipeline runs: real dispatches from that location become the evidence for the audio reconstruction.
+
+### Chrono Radio — non-stop broadcast from the archive
+
+![Chrono Radio — ON AIR with era-voiced DJ intro and live waveform](https://github.com/user-attachments/assets/c5b23fde-230f-4664-b850-769773f6f5d1)
+
+Once a soundscape is ready, hit **▶ Start Chrono Radio** for continuous playback. A period-authentic radio host announces each track, then 90 seconds of historically-grounded music plays. At the 30-second mark the next track is already being composed in the background — new passages retrieved, new scene synthesised, new DJ intro written — so the broadcast never gaps. Perfect for winding down in the evening with non-stop hits from another century.
 
 ---
 
@@ -73,7 +79,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full pipeline diagram.
 | **Era coverage** | Gilded Age · WWI · Jazz Age · WWII |
 | **Cold query latency** | ~500ms |
 | **Warm cache latency** | ~8ms |
-| **Passages per query** | Top-8 returned, top-3 used for synthesis |
+| **Passages per query** | Top-8 returned, up to 6 used for synthesis |
 
 ---
 
@@ -101,6 +107,7 @@ Each article was chunked into passage-sized segments, embedded locally with `all
 
 ## Features
 
+- **Chrono Radio** — continuous non-stop playback with era-voiced DJ intros between tracks; next track pre-generated at the 30s mark so there are no gaps
 - **Lost music reconstruction** — AI writes era-appropriate lyrics drawn from actual historical newspaper language, not generic period clichés
 - **Vocal vs. instrumental decision** — Gemini decides from passage content: a saloon scene in the Jazz Age gets vocals; a factory floor stays instrumental
 - **Era-specific lyric cadence** — Gilded Age parlor ballad, WWI marching anthem, Jazz Age Tin Pan Alley, WWII big band ballad

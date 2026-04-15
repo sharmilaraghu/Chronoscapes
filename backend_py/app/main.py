@@ -13,7 +13,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.lib.logger import get_logger
-from app.routers import health, search, analyze, synthesize
+from app.routers import health, search, analyze, synthesize, radio
 
 logger = get_logger("app")
 
@@ -86,6 +86,7 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(search.router, prefix="/api", tags=["search"])
 app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 app.include_router(synthesize.router, prefix="/api", tags=["synthesize"])
+app.include_router(radio.router, prefix="/api", tags=["radio"])
 
 # ── Global error handler ───────────────────────────────────────────────────────
 
