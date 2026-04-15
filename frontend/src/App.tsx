@@ -31,10 +31,14 @@ export default function App() {
   const [hasEntered, setHasEntered] = useState(false);
   const [showColdStartToast, setShowColdStartToast] = useState(false);
 
+  const isRemote = Boolean(import.meta.env.VITE_API_URL);
+
   function handleEnter() {
     setHasEntered(true);
-    setShowColdStartToast(true);
-    setTimeout(() => setShowColdStartToast(false), 8000);
+    if (isRemote) {
+      setShowColdStartToast(true);
+      setTimeout(() => setShowColdStartToast(false), 8000);
+    }
   }
 
   const {
@@ -106,7 +110,14 @@ export default function App() {
           Deployed on Render free tier — please allow up to 50 s for the server to wake up.
         </div>
       )}
-      <Masthead edition={edition} compact onTitleClick={() => setHasEntered(false)} />
+      <Masthead edition={edition} compact onTitleClick={() => {
+        reset();
+        setCurrentPlace('');
+        setCurrentEra(undefined);
+        setMapCenter(undefined);
+        setMapQuery(undefined);
+        setHasEntered(false);
+      }} />
 
       {/* Search bar */}
       <div className="search-bar-strip">

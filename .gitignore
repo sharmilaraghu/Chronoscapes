@@ -5,6 +5,7 @@ todo.md
 docs/
 tasks/
 .backup/
+demo-audio/
 
 # Secrets
 backend/.env

@@ -9,6 +9,26 @@ Centuries of music were never recorded. The only evidence that it existed at all
 
 No recordings. No samples. Just historical evidence, AI synthesis, and ElevenLabs turning it into sound.
 
+> **4.47 million** historical newspaper passages indexed in turbopuffer. Warm-cache query latency: **~8ms**.
+
+---
+
+### Landing page — choose your era, enter the archive
+
+![Landing page — era selector and archive entry](https://github.com/user-attachments/assets/0082dd4b-0343-4ef5-8406-3c4e15fef72c)
+
+### Archive search — real newspaper dispatches ranked by semantic relevance
+
+![Search results — archival passages with sound analysis tags](https://github.com/user-attachments/assets/22284b65-a196-4836-b87b-743e5921d501)
+
+The retrieved passages aren't summaries or paraphrases — they're real 19th and 20th century newspaper text, ranked by how closely their language matches your query. Each card shows the extracted sound profile: instruments, environment, mood, and highlight phrases that will shape the composition.
+
+### Map mode — explore history by location
+
+![Map search — pick any city or region to query its historical soundscape](https://github.com/user-attachments/assets/780fa860-bd7b-4b04-8ed4-37873ff60587)
+
+Drop a pin anywhere on the map and Chronoscapes queries the archive for newspaper passages from that place. The same RAG pipeline runs: real dispatches from that location become the evidence for the audio reconstruction.
+
 ---
 
 ## How it works
@@ -121,109 +141,16 @@ User query  (e.g. "Harlem 1920s at night")
 | **LLM** | Google Gemini Flash 2.5 — batch analysis + scene synthesis + lyric writing |
 | **Music** | ElevenLabs Music API (`/v1/music/compose`, 30–90s, vocal or instrumental) |
 | **SFX** | ElevenLabs Sound Effects API (`/v1/sound-generation`, 15s) |
-| **Rate limiting** | SlowAPI (5 req/min per IP on `/api/synthesize`) |
 
 ---
 
 ## Features
 
-- **Lost music reconstruction** — AI writes era-appropriate lyrics drawn from historical newspaper language, not generic period clichés
-- **Vocal vs. instrumental decision** — Gemini decides based on passage content: a saloon scene in the Jazz Age gets vocals; a factory floor stays instrumental
+- **Lost music reconstruction** — AI writes era-appropriate lyrics drawn from actual historical newspaper language, not generic period clichés
+- **Vocal vs. instrumental decision** — Gemini decides from passage content: a saloon scene in the Jazz Age gets vocals; a factory floor stays instrumental
 - **Era-specific lyric cadence** — Gilded Age parlor ballad, WWI marching anthem, Jazz Age Tin Pan Alley, WWII big band ballad
-- **Configurable broadcast length** — choose 30s, 60s, or 90s music before composing
-- **Semantic archive search** — natural language queries against 4.47M historical newspaper vectors
-- **Era filtering** — restrict results to Gilded Age, WWI, Jazz Age, or WWII
-- **Concurrent audio generation** — ElevenLabs music + SFX generated simultaneously
-- **Auto-retry on bad prompt** — if ElevenLabs rejects a prompt, retries with their sanitized suggestion
-- **Real-time waveform visualization** — Web Audio API `AnalyserNode` drives canvas waveform
-- **Vintage newspaper UI** — dispatch cards with halftone overlays, parchment textures, era badges
-- **Audio download** — save generated music as `chronoscape-music.mp3`
-- **Source transparency** — every sound decision is traceable back to the newspaper passages that informed it
-
----
-
-## Quick Start
-
-```bash
-# Clone and start both servers
-./start.sh
-
-# Backend runs on http://localhost:8000
-# Frontend runs on http://localhost:5173
-```
-
-Or manually:
-
-```bash
-# Backend
-cd backend_py
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --port 8000
-
-# Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## Environment Variables
-
-Create `backend_py/.env` (see `backend_py/.env.example`):
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key |
-| `ELEVENLABS_API_KEY` | Yes | ElevenLabs API key |
-| `TURBOPUFFER_API_KEY` | Yes | turbopuffer API key |
-| `TURBOPUFFER_NAMESPACE` | Yes | Namespace (`chronoscopes-v2`) |
-| `TURBOPUFFER_REGION` | Yes | Region (`aws-us-east-1`) |
-| `HF_TOKEN` | Optional | HuggingFace token for faster model downloads |
-| `CORS_ORIGINS` | No | Allowed CORS origins (default: `http://localhost:5173`) |
-| `RATE_LIMIT_PER_MINUTE` | No | Rate limit for `/api/synthesize` (default: `5`) |
-
----
-
-## API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/health` | Health check + turbopuffer cache warm-up |
-| `POST` | `/api/search` | ANN vector search → top-8 passages |
-| `POST` | `/api/analyze` | Gemini batch analysis — extract sound signatures from passages |
-| `POST` | `/api/synthesize` | Scene synthesis + lyric generation + ElevenLabs audio |
-
-All responses use the envelope: `{ "success": true, "data": {...} }`
-
----
-
-## Project Structure
-
-```
-Chronoscapes/
-├── start.sh                  # Concurrent backend + frontend startup
-├── README.md
-├── CLAUDE.md                 # Claude Code configuration
-├── backend_py/               # Python FastAPI backend
-│   ├── requirements.txt
-│   ├── app/
-│   │   ├── main.py           # FastAPI app, CORS, rate limit, lifespan
-│   │   ├── config.py         # Pydantic Settings from .env
-│   │   ├── routers/          # health, search, analyze, synthesize
-│   │   ├── services/         # embeddings, search, analyze, synthesize, audio
-│   │   └── lib/              # types, logger
-│   └── .env.example
-├── frontend/                 # React + Vite frontend
-│   ├── src/
-│   │   ├── App.tsx           # Main app, state machine, layout
-│   │   ├── hooks/            # useChronoscape, useAudio
-│   │   ├── components/       # AudioPlayer, ReconstructedScene, DispatchCard, etc.
-│   │   └── lib/              # api client, types
-│   └── package.json
-└── .backup/                  # Retired TypeScript/Hono backend (reference only)
-```
+- **Semantic archive search** — natural language queries against 4.47M historical newspaper vectors in turbopuffer
+- **Source transparency** — every sound decision is traceable back to the newspaper passages that grounded it
 
 ---
 
