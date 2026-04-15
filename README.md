@@ -58,7 +58,7 @@ The result plays back through a vintage radio UI with a real-time waveform.
 
 ## Architecture
 
-See [docs/architecture.md](docs/architecture.md) for the full pipeline diagram.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full pipeline diagram.
 
 ---
 
