@@ -67,7 +67,7 @@ See [docs/architecture.md](docs/architecture.md) for the full pipeline diagram.
 | Metric | Value |
 |--------|-------|
 | **Vectors in turbopuffer** | ~4.47 million |
-| **Dataset** | AmericanStories (`gustavecortal/american-stories-sample`) |
+| **Dataset** | [AmericanStories](https://huggingface.co/datasets/dell-research-harvard/AmericanStories) — sample of 340 GB corpus |
 | **Vector dimension** | 384 (all-MiniLM-L6-v2) |
 | **Namespace** | `chronoscopes-v2` |
 | **Era coverage** | Gilded Age · WWI · Jazz Age · WWII |
@@ -79,7 +79,7 @@ See [docs/architecture.md](docs/architecture.md) for the full pipeline diagram.
 
 ## Dataset
 
-The [AmericanStories dataset](https://huggingface.co/datasets/dell-research-harvard/AmericanStories) is one of the largest digitized collections of American newspaper text ever assembled, spanning over a century of print journalism. We ingested a sample of this massive archive — selecting articles across four historical eras (Gilded Age, WWI, Jazz Age, WWII) — and processed them into turbopuffer.
+The [AmericanStories dataset](https://huggingface.co/datasets/dell-research-harvard/AmericanStories) is one of the largest digitized collections of American newspaper text ever assembled — **340 GB** of raw historical print journalism spanning over a century. We ingested a sample of this massive archive — selecting articles across four historical eras (Gilded Age, WWI, Jazz Age, WWII) — and processed them into turbopuffer.
 
 Each article was chunked into passage-sized segments, embedded locally with `all-MiniLM-L6-v2`, geo-tagged with city/state coordinates, and classified by era before upload. The result is a turbopuffer namespace where every query surfaces real, sourced newspaper text from the era and location you specify — not summaries, not paraphrases, but the original words journalists wrote at the time.
 
