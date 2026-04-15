@@ -15,7 +15,7 @@ No recordings. No samples. Just historical evidence, AI synthesis, and ElevenLab
 
 ### Landing page — choose your era, enter the archive
 
-![Landing page — era selector and archive entry](https://github.com/user-attachments/assets/0082dd4b-0343-4ef5-8406-3c4e15fef72c)
+![Landing page — era selector and archive entry](https://github.com/user-attachments/assets/780fa860-bd7b-4b04-8ed4-37873ff60587)
 
 ### Archive search — real newspaper dispatches ranked by semantic relevance
 
@@ -25,7 +25,7 @@ The retrieved passages aren't summaries or paraphrases — they're real 19th and
 
 ### Map mode — explore history by location
 
-![Map search — pick any city or region to query its historical soundscape](https://github.com/user-attachments/assets/780fa860-bd7b-4b04-8ed4-37873ff60587)
+![Map search — pick any city or region to query its historical soundscape](https://github.com/user-attachments/assets/0082dd4b-0343-4ef5-8406-3c4e15fef72c)
 
 Drop a pin anywhere on the map and Chronoscapes queries the archive for newspaper passages from that place. The same RAG pipeline runs: real dispatches from that location become the evidence for the audio reconstruction.
 
