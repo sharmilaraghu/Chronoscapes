@@ -1,7 +1,8 @@
 import axios from 'axios';
 import type { SearchRequest, SearchResponse, AnalyzeRequest, AnalyzeResponse, SynthesizeRequest, SynthesizeResponse } from './types';
 
-const client = axios.create({ baseURL: '/api' });
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+const client = axios.create({ baseURL: `${BASE_URL}/api` });
 
 export async function searchPassages(request: SearchRequest): Promise<SearchResponse> {
   const { data } = await client.post<SearchResponse>('/search', request);
