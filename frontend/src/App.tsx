@@ -29,6 +29,13 @@ function getActiveStep(appState: string) {
 
 export default function App() {
   const [hasEntered, setHasEntered] = useState(false);
+  const [showColdStartToast, setShowColdStartToast] = useState(false);
+
+  function handleEnter() {
+    setHasEntered(true);
+    setShowColdStartToast(true);
+    setTimeout(() => setShowColdStartToast(false), 8000);
+  }
 
   const {
     appState,
@@ -89,11 +96,16 @@ export default function App() {
       : undefined;
 
   if (!hasEntered) {
-    return <LandingPage onEnter={() => setHasEntered(true)} />;
+    return <LandingPage onEnter={handleEnter} />;
   }
 
   return (
     <div className="app-shell">
+      {showColdStartToast && (
+        <div className="cold-start-toast" role="status">
+          Deployed on Render free tier — please allow up to 50 s for the server to wake up.
+        </div>
+      )}
       <Masthead edition={edition} compact onTitleClick={() => setHasEntered(false)} />
 
       {/* Search bar */}

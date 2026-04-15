@@ -1619,13 +1619,46 @@
   }
 }
 
+/* ── Map zoom controls ───────────────────────────────────────────────────── */
+
+.map-zoom-controls {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-zoom-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--color-paper);
+  border: var(--border-ink);
+  color: var(--color-ink);
+  font-family: var(--font-caption);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-clipping);
+}
+
+.map-zoom-btn:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
 /* ── Cold-start toast ─────────────────────────────────────────────────────── */
 
 .cold-start-toast {
   position: fixed;
-  bottom: 1.75rem;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 9999;
 
   background: var(--color-ink);
@@ -1642,6 +1675,6 @@
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); }
+  to   { opacity: 1; transform: translate(-50%, -50%);              }
 }

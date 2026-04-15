@@ -13,6 +13,27 @@ const vintageIcon = L.divIcon({
   popupAnchor: [0, -34],
 });
 
+function ZoomControls() {
+  const map = useMap();
+
+  function handleZoomIn(e: React.MouseEvent) {
+    e.stopPropagation();
+    map.zoomIn();
+  }
+
+  function handleZoomOut(e: React.MouseEvent) {
+    e.stopPropagation();
+    map.zoomOut();
+  }
+
+  return (
+    <div className="map-zoom-controls" onClick={(e) => e.stopPropagation()}>
+      <button className="map-zoom-btn" onClick={handleZoomIn} aria-label="Zoom in" type="button">+</button>
+      <button className="map-zoom-btn" onClick={handleZoomOut} aria-label="Zoom out" type="button">−</button>
+    </div>
+  );
+}
+
 interface FlyToProps {
   center: [number, number];
 }
@@ -106,6 +127,8 @@ export default function ChronoscapeMap({
             </Marker>
           </>
         )}
+
+        <ZoomControls />
 
         {onLocationSelect && (
           <MapClickHandler

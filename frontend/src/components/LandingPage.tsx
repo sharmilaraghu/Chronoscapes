@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import sceneJazz   from '../images/DxeICoe57j_nT8nKdSOiv9Xrn_vBurtDC0Ff4vMIuF3B0p36o4EcTVnQVzBkgusXRHhcO3QNL4X0T0Zvo0EPldpm28PFGjkbAk-7XzjldYyu4TViuIG1O7KlesacrtZ1uteMT7ZK7E8vPyKEd9hohmuxzNfGinmB-JBihiXFQ8wSohQ1VbZaJy4igpQN1BKc.jpeg';
 import sceneStreet from '../images/f06e5sU1VjQDZG7MSlLPCGcSkD-ZkzqpOPpoZTHa7sY9NVTpFJkreQNMCixypiuhXT6m4AjX4LWpEhTtvyZVKhkVpbAp3IXQbZ-J6OQLV02qyBLO-ZiyaJNoKUSuKltA7HLoDJ4C39Pe4ckrUdFlnlot7WJ5AiVfEsAAbMTIRBTED6D2w5e5hy6iaY0ZHj_1.jpeg';
 import sceneMarket from '../images/NLwKhVo1iatYoFnF9uYGLFr7TIck6w0I9sP2Q6QAlca2fnCT7phh-GqGlvOrhdyDM_ysNe1HijhX_1FfBD2XZGqb1J2RoV2WTih-TByUm0hLhnQFpGNU2A2bGQeMmNt_oHXRjPcCoKBAxnIPJu9nNyoPF2VMQNIahSlDDKBtD5-35Qib41mitc6mHkf8V8ca.jpeg';
@@ -14,21 +13,8 @@ const SCENES = [
 ];
 
 export default function LandingPage({ onEnter }: LandingPageProps) {
-  const [toast, setToast] = useState(false);
-
-  function handleEnter() {
-    setToast(true);
-    setTimeout(() => setToast(false), 8000);
-    onEnter();
-  }
-
   return (
     <div className="landing-root">
-      {toast && (
-        <div className="cold-start-toast" role="status">
-          Deployed on Render free tier — please allow up to 50 s for the server to wake up.
-        </div>
-      )}
       {/* Noise texture overlay */}
       <div className="landing-noise" aria-hidden />
 
@@ -81,7 +67,7 @@ export default function LandingPage({ onEnter }: LandingPageProps) {
         </div>
 
         {/* CTA */}
-        <button className="landing-enter-btn" onClick={handleEnter} type="button">
+        <button className="landing-enter-btn" onClick={onEnter} type="button">
           Enter the Archive &nbsp;→
         </button>
       </main>
