@@ -1,6 +1,13 @@
 # Chronoscapes — Music from the Lost Ages
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-c8a84b.svg)
+![turbopuffer](https://img.shields.io/badge/vector_db-turbopuffer-6366f1.svg)
+![ElevenLabs](https://img.shields.io/badge/audio-ElevenLabs-f97316.svg)
+![Gemini](https://img.shields.io/badge/LLM-Gemini_Flash_2.5-4285F4.svg?logo=google&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF.svg?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4.svg?logo=tailwindcss&logoColor=white)
 
 > What did a Harlem jazz club sound like in 1925? What songs filled a London street during the Blitz?
 > Chronoscapes brings that music back.
@@ -51,67 +58,7 @@ The result plays back through a vintage radio UI with a real-time waveform.
 
 ## Architecture
 
-```
-User query  (e.g. "Harlem 1920s at night")
-        │
-        ▼
-┌──────────────────────────────────┐
-│  1. EMBEDDING                    │
-│  all-MiniLM-L6-v2 (384-dim)      │
-│  BGE query prefix applied        │
-└──────────────────────────────────┘
-        │
-        ▼
-┌──────────────────────────────────────────────────┐
-│  2. turbopuffer ANN SEARCH                        │
-│  Namespace: chronoscopes-v2  │  aws-us-east-1     │
-│  Top-8 passages returned                          │
-│  Cold: ~500ms  │  Warm (NVMe cache): ~8ms         │
-└──────────────────────────────────────────────────┘
-        │
-        ▼
-┌──────────────────────────────────┐
-│  3. GEMINI FLASH 2.5 — BATCH     │
-│  One call, all passages          │
-│  Extracts: soundKeywords,        │
-│  highlightPhrases, soundProfile  │
-│  (environment, timeOfDay,        │
-│  intensity, primary/secondary)   │
-└──────────────────────────────────┘
-        │
-        Top 3 auto-selected by sound richness
-        User can adjust selection (1–3 passages)
-        │
-        ▼
-┌──────────────────────────────────────────────────┐
-│  4. GEMINI FLASH 2.5 — SYNTHESIS                  │
-│  Merges selected passages into SynthesizedScene   │
-│  Decides: vocal or instrumental?                  │
-│  If vocal: writes era-appropriate lyrics          │
-│  drawn from actual passage language               │
-│  Produces: musicPrompt + sfxPrompt                │
-└──────────────────────────────────────────────────┘
-        │
-        ├──────────────────────────────┐
-        ▼                              ▼
-┌───────────────────────┐   ┌─────────────────────────┐
-│  ELEVENLABS MUSIC API │   │  ELEVENLABS SFX API     │
-│  /v1/music/compose    │   │  /v1/sound-generation   │
-│  30 / 60 / 90 sec     │   │  15-second ambient clip │
-│  lyrics embedded      │   │  exact sounds from text │
-│  force_instrumental   │   │  (concurrent)           │
-│  when appropriate     │   │                         │
-└───────────────────────┘   └─────────────────────────┘
-        │                              │
-        └──────────────┬───────────────┘
-                       ▼
-           ┌────────────────────────┐
-           │  Web Audio API         │
-           │  Real-time waveform    │
-           │  Auto-play on load     │
-           │  Download button       │
-           └────────────────────────┘
-```
+See [docs/architecture.md](docs/architecture.md) for the full pipeline diagram.
 
 ---
 
@@ -127,6 +74,14 @@ User query  (e.g. "Harlem 1920s at night")
 | **Cold query latency** | ~500ms |
 | **Warm cache latency** | ~8ms |
 | **Passages per query** | Top-8 returned, top-3 used for synthesis |
+
+---
+
+## Dataset
+
+The [AmericanStories dataset](https://huggingface.co/datasets/dell-research-harvard/AmericanStories) is one of the largest digitized collections of American newspaper text ever assembled, spanning over a century of print journalism. We ingested a sample of this massive archive — selecting articles across four historical eras (Gilded Age, WWI, Jazz Age, WWII) — and processed them into turbopuffer.
+
+Each article was chunked into passage-sized segments, embedded locally with `all-MiniLM-L6-v2`, geo-tagged with city/state coordinates, and classified by era before upload. The result is a turbopuffer namespace where every query surfaces real, sourced newspaper text from the era and location you specify — not summaries, not paraphrases, but the original words journalists wrote at the time.
 
 ---
 
