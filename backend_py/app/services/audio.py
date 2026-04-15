@@ -28,21 +28,23 @@ async def _elevenlabs_audio(endpoint: str, body: dict, *, retries: int = 1) -> s
     if not resp.is_success:
         try:
             err_body = resp.json()
-            # ElevenLabs may return a safe prompt suggestion on bad_prompt errors
+            # ElevenLabs wraps errors under a "detail" key
+            detail = err_body.get("detail", err_body)
             if (
-                err_body.get("status") == "bad_prompt"
-                and err_body.get("data", {}).get("prompt_suggestion")
+                detail.get("status") == "bad_prompt"
+                and detail.get("data", {}).get("prompt_suggestion")
                 and retries > 0
             ):
-                safe_prompt = err_body["data"]["prompt_suggestion"]
+                safe_prompt = detail["data"]["prompt_suggestion"]
                 logger.warning(
                     "ElevenLabs rejected original prompt, retrying with sanitized version",
                     original_prompt_len=len(body.get("prompt", body.get("text", ""))),
                     safe_prompt_len=len(safe_prompt),
                 )
+                prompt_key = "text" if endpoint == "/v1/sound-generation" else "prompt"
                 return await _elevenlabs_audio(
                     endpoint,
-                    {**body, "prompt" if endpoint == "/v1/music/generate" else "text": safe_prompt},
+                    {**body, prompt_key: safe_prompt},
                     retries=0,
                 )
         except Exception:

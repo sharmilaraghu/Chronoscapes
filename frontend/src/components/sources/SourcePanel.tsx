@@ -101,9 +101,9 @@ export default function SourcePanel({
       {sortedChunks.length > 0 && !isLoading && !isSynthesizing && (
         <>
           <div className="dispatch-selection-hint">
-            <span>Select 1–3 dispatches to compose your soundscape</span>
+            <span>Select 1–6 dispatches to compose your soundscape</span>
             <span className="dispatch-selection-count">
-              {selectedChunkIds.length}/3 selected
+              {selectedChunkIds.length}/6 selected
             </span>
           </div>
 

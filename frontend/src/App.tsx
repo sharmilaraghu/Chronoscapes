@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { warmCache } from './lib/api';
 import type { Era } from './lib/types';
 import { useChronoscape } from './hooks/useChronoscape';
+import { useChronoRadio } from './hooks/useChronoRadio';
 import LandingPage from './components/LandingPage';
 
 import Masthead from './components/layout/Masthead';
@@ -9,6 +10,7 @@ import NewspaperLayout from './components/layout/NewspaperLayout';
 import SearchBar from './components/search/SearchBar';
 import ChronoscapeMap from './components/map/ChronoscapeMap';
 import AudioPlayer from './components/audio/AudioPlayer';
+import RadioPlayer from './components/audio/RadioPlayer';
 import SourcePanel from './components/sources/SourcePanel';
 import ReconstructedScene from './components/ReconstructedScene';
 
@@ -65,18 +67,33 @@ export default function App() {
   const [currentEra, setCurrentEra] = useState<Era | undefined>(undefined);
   const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
   const [mapQuery, setMapQuery] = useState<string | undefined>(undefined);
+  const [radioActive, setRadioActive] = useState(false);
+
+  const {
+    radioState,
+    currentTrack,
+    trackNumber,
+    djScript,
+    analyserNode: radioAnalyserNode,
+    startRadio,
+    stopRadio,
+  } = useChronoRadio(currentPlace, currentEra);
 
   useEffect(() => {
     warmCache();
   }, []);
 
   async function handleSearch(query: string, era: Era | undefined) {
+    stopRadio();
+    setRadioActive(false);
     setCurrentPlace(query);
     setCurrentEra(era);
     await search(query, era);
   }
 
   function handleLocationSelect(placeName: string, coords: [number, number]) {
+    stopRadio();
+    setRadioActive(false);
     setMapCenter(coords);
     setCurrentPlace(placeName);
     setMapQuery(placeName);
@@ -111,6 +128,8 @@ export default function App() {
         </div>
       )}
       <Masthead edition={edition} compact onTitleClick={() => {
+        stopRadio();
+        setRadioActive(false);
         reset();
         setCurrentPlace('');
         setCurrentEra(undefined);
@@ -163,19 +182,46 @@ export default function App() {
             <>
               {/* Audio player — top, only when ready AND audio is present */}
               {appState === 'ready' && (musicUrl || sfxUrl) ? (
-                <AudioPlayer
-                  musicUrl={musicUrl}
-                  sfxUrl={sfxUrl}
-                  synthesizedPrompt={synthesizedScene?.sfxPrompt ?? synthesizedScene?.musicPrompt ?? null}
-                  era={currentEra}
-                  location={currentPlace}
-                  appState={appState}
-                  onReset={reset}
-                />
+                radioActive ? (
+                  <RadioPlayer
+                    radioState={radioState}
+                    djScript={djScript}
+                    trackNumber={trackNumber}
+                    analyserNode={radioAnalyserNode}
+                    era={currentEra}
+                    city={currentTrack?.city ?? currentPlace}
+                    onStop={() => {
+                      stopRadio();
+                      setRadioActive(false);
+                    }}
+                  />
+                ) : (
+                  <>
+                    <AudioPlayer
+                      musicUrl={musicUrl}
+                      sfxUrl={sfxUrl}
+                      synthesizedPrompt={synthesizedScene?.sfxPrompt ?? synthesizedScene?.musicPrompt ?? null}
+                      era={currentEra}
+                      location={currentPlace}
+                      appState={appState}
+                      onReset={reset}
+                    />
+                    <button
+                      className="radio-chrono-start-btn"
+                      onClick={() => {
+                        setRadioActive(true);
+                        startRadio();
+                      }}
+                      type="button"
+                    >
+                      ▶ Start Chrono Radio
+                    </button>
+                  </>
+                )
               ) : null}
 
-              {/* Scene reconstruction — below radio, only when ready */}
-              {appState === 'ready' && synthesizedScene ? (
+              {/* Scene reconstruction — below radio, only when ready and not in radio mode */}
+              {appState === 'ready' && synthesizedScene && !radioActive ? (
                 <ReconstructedScene
                   scene={synthesizedScene}
                   musicUrl={musicUrl ?? null}

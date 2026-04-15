@@ -93,11 +93,11 @@ export function useChronoscape(): ChronoscapeResult {
       const analyses = analyzeRes.data.analyses;
       setAnalyzedChunks(analyses);
 
-      // Auto-select top 3 by soundKeywords count
+      // Auto-select top 6 by soundKeywords count
       const autoSelected = [...analyses]
         .filter((a) => !a.error) // don't auto-select failed chunks
         .sort((a, b) => b.soundKeywords.length - a.soundKeywords.length)
-        .slice(0, 3)
+        .slice(0, 6)
         .map((a) => a.id);
 
       setSelectedChunkIds(autoSelected);
@@ -111,7 +111,7 @@ export function useChronoscape(): ChronoscapeResult {
   const selectChunk = useCallback((id: string) => {
     setSelectedChunkIds((prev) => {
       if (prev.includes(id)) return prev;
-      if (prev.length >= 3) return prev; // max 3 selections
+      if (prev.length >= 6) return prev; // max 6 selections
       return [...prev, id];
     });
   }, []);
